@@ -20,12 +20,20 @@ def show(df, estado_cob):
     
     with col1:
         st.subheader("Materiales")
-        # Tabla resumida de materiales con Q y CG
+        # Tabla resumida de materiales
         if 'Material' in df.columns:
-            materiales_summary = df.groupby('Material').agg({
-                'Q': 'sum' if 'Q' in df.columns else 'count',
-                'CG': 'first' if 'CG' in df.columns else 'count'
-            }).reset_index()
+            # Construir diccionario de agregación dinámicamente
+            agg_dict = {}
+            if 'Q' in df.columns:
+                agg_dict['Q'] = 'sum'
+            if 'CG' in df.columns:
+                agg_dict['CG'] = 'first'
+                
+            # Si no hay columnas extra para agregar, solo listamos materiales únicos
+            if not agg_dict:
+                 materiales_summary = pd.DataFrame(df['Material'].unique(), columns=['Material'])
+            else:
+                 materiales_summary = df.groupby('Material').agg(agg_dict).reset_index()
             
             # Limitar a 10 registros para la vista
             st.dataframe(
