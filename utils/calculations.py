@@ -68,7 +68,14 @@ def calculate_top_materials(df, value_col='Inv Kg-L', top_n=15, ascending=False)
     
     top = df.nlargest(top_n, value_col) if not ascending else df.nsmallest(top_n, value_col)
     
-    return top[['Material', 'Origen', value_col]].copy()
+    # Seleccionar columnas dinámicamente
+    cols_to_return = ['Material', value_col]
+    if 'Origen' in df.columns:
+        cols_to_return.append('Origen')
+    if 'Descripción' in df.columns:
+        cols_to_return.append('Descripción')
+        
+    return top[cols_to_return].copy()
 
 def calculate_evolucion_inventario(df, fecha_col='Fecha', inv_col='Inv Kg-L'):
     """
